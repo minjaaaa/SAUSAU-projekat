@@ -16,24 +16,24 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     train_df = pd.read_csv(train_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
     test_df = pd.read_csv(test_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
 
-    # Trim whitespace iz string kolona
+    # brisem whitespace-ove
     for col in train_df.select_dtypes(include='object').columns:
         train_df[col] = train_df[col].str.strip()
     for col in test_df.select_dtypes(include='object').columns:
         test_df[col] = test_df[col].str.strip()
 
-    # Split data i target
-    X_train = train_df.iloc[:, :-1]
-    y_train = train_df.iloc[:, -1]
-    X_test = test_df.iloc[:, :-1]
+    
+    X_train = train_df.iloc[:, :-1] #preuzimam sve kolone osim poslednje-target izlaza
+    y_train = train_df.iloc[:, -1] #izdvajam izlaz - model ne sme da ga vidi u toku treniranja
+    X_test = test_df.iloc[:, :-1] #isto i za test skup
     y_test = test_df.iloc[:, -1]
 
     # Izbacivanje redova gde je ciljna kolona NaN
-    train_notna = y_train.notna()
-    X_train = X_train[train_notna]
-    y_train = y_train[train_notna]
+    train_notna = y_train.notna() #vraca masku True/False gdje izlaz nije/jeste Nan
+    X_train = X_train[train_notna] 
+    y_train = y_train[train_notna] #nema Nan vrednosti
 
-    test_notna = y_test.notna()
+    test_notna = y_test.notna() #postoji samo 1 Nan u y_test, ali baca error svakako
     X_test = X_test[test_notna]
     y_test = y_test[test_notna]
 
@@ -42,3 +42,9 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     y_test = y_test.str.strip().str.replace('.', '', regex=False)
 
     return X_train, X_test, y_train, y_test
+
+if __name__ == "__main__":
+    
+    pass
+
+
