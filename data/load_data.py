@@ -1,4 +1,6 @@
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 COLUMN_NAMES = [
     "age", "workclass", "fnlwgt", "education", "education-num",
@@ -12,7 +14,7 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     Učitaj train i test CSV fajlove bez zaglavlja i dodaj imena kolona.
     Izbaci redove gde je ciljna kolona NaN i normalizuj income vrednosti.
     """
-    # Učitavanje CSV fajlova
+    # ucitavanje CSV fajlova
     train_df = pd.read_csv(train_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
     test_df = pd.read_csv(test_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
 
@@ -22,6 +24,11 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     for col in test_df.select_dtypes(include='object').columns:
         test_df[col] = test_df[col].str.strip()
 
+    #uklanjanje duplikata iz train skupa
+    train_df = detect_duplicate(train_df)
+    #detect_outliers(train_df)
+    sns.countplot(x='income', data=train_df)
+    
     
     X_train = train_df.iloc[:, :-1] #preuzimam sve kolone osim poslednje-target izlaza
     y_train = train_df.iloc[:, -1] #izdvajam izlaz - model ne sme da ga vidi u toku treniranja
@@ -43,8 +50,34 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
 
     return X_train, X_test, y_train, y_test
 
+def detect_duplicate(df):
+    """
+    Proverava duplikate u train setu i uklanja ih.
+    Vraća očišćen DataFrame bez duplikata.
+    """
+
+    duplicates = df.duplicated()
+    print("Postoje li duplikati?", duplicates.any())
+
+    print("Broj redova pre uklanjanja duplikata:", df.shape[0])
+
+    num_duplicates = df.duplicated().sum()
+    print("Broj duplikata:", num_duplicates)
+
+    # uklanjanje duplikata
+    df_clean = df.drop_duplicates()
+
+    # provera posle
+    print("Broj redova posle uklanjanja duplikata:", df_clean.shape[0])
+    return df_clean
+
+def detect_outliers(df):
+    sns.boxplot(x=df['age'])
+    plt.title("Boxplot za age")
+    plt.show()
+
 if __name__ == "__main__":
     
-    pass
+    load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_test.csv")
 
 
