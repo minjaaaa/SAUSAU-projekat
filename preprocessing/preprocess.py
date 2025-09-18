@@ -7,14 +7,14 @@ def preprocess_data(X_train, X_test, y_train, y_test):
     - Kodiranje ciljne varijable sa LabelEncoder
     - Nepoznate vrednosti u test setu se kodiraju kao -1
     """
-    # Detekcija kategorijskih kolona
+    
     cat_cols = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
-
+    #cat_cols lista svih kolona - 'workclass', 'education'...
     X_train_encoded = X_train.copy()
     X_test_encoded = X_test.copy()
 
     if len(cat_cols) > 0:
-        enc = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+        enc = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1) #sve vr koje nadje u test a nisu u train stavice na -1
         X_train_encoded[cat_cols] = enc.fit_transform(X_train[cat_cols])
         X_test_encoded[cat_cols] = enc.transform(X_test[cat_cols])
 
