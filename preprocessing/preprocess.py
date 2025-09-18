@@ -26,23 +26,7 @@ def preprocess_data(X_train, X_test, y_train, y_test):
 
     return X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded
 
-def find_duplicate(train_path="data/adult_train.csv"):
-    df = pd.read_csv("data/adult_train.csv", header=None)
-    duplicates = df.duplicated()
-    print("Postoje li duplikati?", duplicates.any())
-
-    print("Broj redova pre uklanjanja duplikata:", df.shape[0])
-
-    num_duplicates = df.duplicated().sum()
-    print("Broj duplikata:", num_duplicates)
-
-    # uklanjanje duplikata
-    df_clean = df.drop_duplicates()
-
-    # provera posle
-    print("Broj redova posle uklanjanja duplikata:", df_clean.shape[0])
-
 
 if __name__ == "__main__":
     
-    find_duplicate(train_path="data/adult_train.csv")
+    pass
