@@ -1,6 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
 COLUMN_NAMES = [
     "age", "workclass", "fnlwgt", "education", "education-num",
@@ -14,39 +15,48 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     Učitaj train i test CSV fajlove bez zaglavlja i dodaj imena kolona.
     Izbaci redove gde je ciljna kolona NaN i normalizuj income vrednosti.
     """
-    # ucitavanje CSV fajlova
+    # Učitavanje CSV fajlova
     train_df = pd.read_csv(train_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
     test_df = pd.read_csv(test_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
 
-    # brisem whitespace-ove
-    for col in train_df.select_dtypes(include='object').columns:
-        train_df[col] = train_df[col].str.strip()
-    for col in test_df.select_dtypes(include='object').columns:
-        test_df[col] = test_df[col].str.strip()
+    # Spajanje trening i test skupa za ujednačenu obradu (pre podele)
+    # Ovo se radi kako bi se osiguralo da su sve operacije primenjene konzistentno na celom datasetu
+    combined_df = pd.concat([train_df, test_df], ignore_index=True)
 
-    #uklanjanje duplikata iz train skupa
-    train_df = detect_duplicate(train_df)
-    sns.countplot(x='income', data=train_df)
+    # Brisanje whitespace-ova
+    for col in combined_df.select_dtypes(include='object').columns:
+        combined_df[col] = combined_df[col].str.strip()
 
+    # Uklanjanje duplikata iz celog dataseta
+    combined_df.drop_duplicates(inplace=True)
     
-    X_train = train_df.iloc[:, :-1] #preuzimam sve kolone osim poslednje-target izlaza
-    y_train = train_df.iloc[:, -1] #izdvajam izlaz - model ne sme da ga vidi u toku treniranja
-    X_test = test_df.iloc[:, :-1] #isto i za test skup
-    y_test = test_df.iloc[:, -1]
+    # Normalizacija ciljne kolone pre podele: ukloni whitespace i tačku
+    combined_df['income'] = combined_df['income'].str.strip().str.replace('.', '', regex=False)
+
+    # Odvajanje obeležja (X) i ciljne varijable (y)
+    X = combined_df.drop('income', axis=1)
+    y = combined_df['income']
 
     # Izbacivanje redova gde je ciljna kolona NaN
-    train_notna = y_train.notna() #vraca masku True/False gdje izlaz nije/jeste Nan
-    X_train = X_train[train_notna] 
-    y_train = y_train[train_notna] #nema Nan vrednosti
+    valid_mask = y.notna()
+    X = X[valid_mask]
+    y = y[valid_mask]
 
-    test_notna = y_test.notna() #postoji samo 1 Nan u y_test, ali baca error svakako
-    X_test = X_test[test_notna]
-    y_test = y_test[test_notna]
+    # **********************************************
+    # Stratifikovana podela na trening i test set, imam neuravnotezen odnos target-a
+    # **********************************************
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, 
+        test_size=0.3, #70% podataka koristim za trening
+        random_state=42, 
+        stratify=y # osigurava ravnomernu raspodelu klasa.
+    )
 
-    # normalizacija ciljne kolone: ukloni whitespace i tačku
-    y_train = y_train.str.strip().str.replace('.', '', regex=False)
-    y_test = y_test.str.strip().str.replace('.', '', regex=False)
-
+    # Prikaz raspodele klasa u trening i test skupu
+    print("Raspodela klasa u y_train:")
+    print(y_train.value_counts(normalize=True))
+    print("\nRaspodela klasa u y_test:")
+    print(y_test.value_counts(normalize=True))
     return X_train, X_test, y_train, y_test
 
 def detect_duplicate(df):
