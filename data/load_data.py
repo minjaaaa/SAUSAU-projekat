@@ -28,6 +28,10 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     train_df = detect_duplicate(train_df)
     #detect_outliers(train_df)
     sns.countplot(x='income', data=train_df)
+
+    #URADI NESTO SA ANOMALIJAMA PRIJE NEGO PODJELIS SKUP !!!!!!!!!!!
+    #i sa nedostajucim vrednostima
+
     
     
     X_train = train_df.iloc[:, :-1] #preuzimam sve kolone osim poslednje-target izlaza
@@ -44,7 +48,7 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     X_test = X_test[test_notna]
     y_test = y_test[test_notna]
 
-    # Normalizacija ciljne kolone: ukloni whitespace i tačku
+    # normalizacija ciljne kolone: ukloni whitespace i tačku
     y_train = y_train.str.strip().str.replace('.', '', regex=False)
     y_test = y_test.str.strip().str.replace('.', '', regex=False)
 
