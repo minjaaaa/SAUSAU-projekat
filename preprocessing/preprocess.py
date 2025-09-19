@@ -28,6 +28,11 @@ def preprocess_data(X_train, X_test, y_train, y_test):
     X_train_cat_encoded = enc.fit_transform(X_train[cat_cols])
     X_test_cat_encoded = enc.transform(X_test[cat_cols])
 
+    # Dohvatite imena enkodiranih kolona
+    encoded_feature_names = enc.get_feature_names_out(cat_cols)
+    # Kreirajte potpunu listu imena obeležja
+    all_feature_names = num_cols + list(encoded_feature_names)
+
     # spajanje enkodiranih kategorija sa numeričkim kolonama
     X_train_encoded = np.hstack([X_train[num_cols], X_train_cat_encoded])
     X_test_encoded = np.hstack([X_test[num_cols], X_test_cat_encoded])
@@ -37,7 +42,7 @@ def preprocess_data(X_train, X_test, y_train, y_test):
     y_train_encoded = le_target.fit_transform(y_train)
     y_test_encoded = le_target.transform(y_test)
 
-    return X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded
+    return X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded, all_feature_names
 
 COLUMN_NAMES = [
     "age", "workclass", "fnlwgt", "education", "education-num",

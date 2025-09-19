@@ -26,7 +26,6 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
 
     #uklanjanje duplikata iz train skupa
     train_df = detect_duplicate(train_df)
-    #detect_outliers(train_df)
     sns.countplot(x='income', data=train_df)
 
     
