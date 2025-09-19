@@ -29,10 +29,6 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     #detect_outliers(train_df)
     sns.countplot(x='income', data=train_df)
 
-    #URADI NESTO SA ANOMALIJAMA PRIJE NEGO PODJELIS SKUP !!!!!!!!!!!
-    #i sa nedostajucim vrednostima
-
-    
     
     X_train = train_df.iloc[:, :-1] #preuzimam sve kolone osim poslednje-target izlaza
     y_train = train_df.iloc[:, -1] #izdvajam izlaz - model ne sme da ga vidi u toku treniranja
@@ -74,11 +70,6 @@ def detect_duplicate(df):
     # provera posle
     print("Broj redova posle uklanjanja duplikata:", df_clean.shape[0])
     return df_clean
-
-def detect_outliers(df):
-    sns.boxplot(x=df['age'])
-    plt.title("Boxplot za age")
-    plt.show()
 
 if __name__ == "__main__":
     

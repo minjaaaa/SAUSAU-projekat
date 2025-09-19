@@ -1,7 +1,7 @@
 from sklearn.preprocessing import OrdinalEncoder, LabelEncoder, OneHotEncoder
 import pandas as pd
-
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
@@ -13,6 +13,8 @@ def preprocess_data(X_train, X_test, y_train, y_test):
     - Kodiranje ciljne varijable sa LabelEncoder
     """
     
+    #PRE ENKODIRANJA OBRADI ANOMALIJE
+
     # podela kolona na numeričke i kategoričke
     cat_cols = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
     num_cols = X_train.select_dtypes(exclude=['object', 'category']).columns.tolist()
@@ -38,6 +40,10 @@ def preprocess_data(X_train, X_test, y_train, y_test):
 
     return X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded
 
+def detect_outliers(df):
+    sns.boxplot(x=df['age'])
+    plt.title("Boxplot za age")
+    plt.show()
 
 if __name__ == "__main__":
     pass
