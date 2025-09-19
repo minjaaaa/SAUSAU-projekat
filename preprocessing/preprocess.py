@@ -9,35 +9,46 @@ def preprocess_data(X_train, X_test, y_train, y_test):
     """
     Preprocesiranje podataka:
     - Obrada nepoznatih vrednosti ('?')
+    - Obrada anomalija (outliera) u svim numeričkim kolonama
     - Kodiranje kategorijskih kolona sa OneHotEncoder
     - Kodiranje ciljne varijable sa LabelEncoder
     """
     
-    #PRE ENKODIRANJA OBRADI ANOMALIJE
+    # 1. Obrada nepoznatih vrednosti ('?')
     X_train.replace('?', 'Unknown', inplace=True)
     X_test.replace('?', 'Unknown', inplace=True)
 
-    # podela kolona na numeričke i kategoričke
-    cat_cols = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
-    num_cols = X_train.select_dtypes(exclude=['object', 'category']).columns.tolist()
+    # 2. Obrada anomalija u svim numeričkim kolonama
+    num_cols = X_train.select_dtypes(include=np.number).columns.tolist()
 
-    # inicijalizacija OneHotEncoder-a za kategoričke kolone
-    enc = OneHotEncoder(sparse_output=False)
+    for col in num_cols: #granice se racunaju samo na trening skupu
+        Q1 = X_train[col].quantile(0.25)
+        Q3 = X_train[col].quantile(0.75)
+        IQR = Q3 - Q1
+        
+        lower_bound = Q1 - 1.5 * IQR
+        upper_bound = Q3 + 1.5 * IQR
+        
+        X_train[col] = np.clip(X_train[col], lower_bound, upper_bound)
+        X_test[col] = np.clip(X_test[col], lower_bound, upper_bound) #ali granice primenjujem i na test skup
+        #model sada generalizuje, i neka precica tipa age>80 target>=50K
     
-    # Kodiranje kategoričkih kolona
+    # 3. Podela kolona na numeričke i kategoričke
+    cat_cols = X_train.select_dtypes(include=['object', 'category']).columns.tolist()
+
+    # 4. Kodiranje kategoričkih kolona
+    enc = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
     X_train_cat_encoded = enc.fit_transform(X_train[cat_cols])
     X_test_cat_encoded = enc.transform(X_test[cat_cols])
 
-    # Dohvatite imena enkodiranih kolona
+    # 5. Spajanje enkodiranih kategorija sa numeričkim kolonama
     encoded_feature_names = enc.get_feature_names_out(cat_cols)
-    # Kreirajte potpunu listu imena obeležja
     all_feature_names = num_cols + list(encoded_feature_names)
 
-    # spajanje enkodiranih kategorija sa numeričkim kolonama
     X_train_encoded = np.hstack([X_train[num_cols], X_train_cat_encoded])
     X_test_encoded = np.hstack([X_test[num_cols], X_test_cat_encoded])
 
-    # 3. Kodiranje ciljne varijable (LabelEncoder)
+    # 6. Kodiranje ciljne varijable
     le_target = LabelEncoder()
     y_train_encoded = le_target.fit_transform(y_train)
     y_test_encoded = le_target.transform(y_test)
