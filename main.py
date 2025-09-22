@@ -4,25 +4,25 @@ from modeling.train_model import train_model
 from evaluation.evaluate import evaluate_model
 from utils.helpers import print_separator
 
-# Učitavanje podataka iz CSV fajlova
+#ucitavanje podataka iz CSV fajlova
 #uklanjanje duplikata i anomalija
-#normalizacija
+#podjela na training i test skup
 X_train, X_test, y_train, y_test = load_adult_data(
     train_path="data/adult_train.csv",
     test_path="data/adult_test.csv"
 )
 
-#preprocessing i enkodiranje
-X_train_enc, X_test_enc, y_train_enc, y_test_enc = preprocess_data(
+#obrada nedostajucih vrednosti i anomalija
+#enkodiranje
+X_train_enc, X_test_enc, y_train_enc, y_test_enc, feature_names = preprocess_data(
     X_train, X_test, y_train, y_test
 )
-
 
 print_separator()
 print("Podaci su preprocesirani i spremni za treniranje.")
 
-# Treniranje modela
-model = train_model(X_train_enc, y_train_enc)
+# Treniranje modela i vaznost parametara
+model = train_model(X_train_enc, y_train_enc, feature_names)
 print("Model je treniran.")
 
 # Evaluacija
