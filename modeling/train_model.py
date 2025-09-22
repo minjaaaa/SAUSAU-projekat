@@ -3,7 +3,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 
-def train_and_evaluate_model(X_train, X_test, y_train, y_test, model_type="RandomForest", feature_names=None):
+def choose_and_train_model(X_train, X_test, y_train, y_test, model_type="RandomForest", feature_names=None):
     """
     Trenira i evaluira odabrani model, i prikazuje važnost obeležja.
     """

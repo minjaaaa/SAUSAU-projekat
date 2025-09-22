@@ -57,7 +57,7 @@ def preprocess_data(X_train, X_test, y_train, y_test):
     X_test_encoded = np.hstack([X_test_num_scaled, X_test_cat_encoded])
 
     # 7. Kodiranje ciljne varijable
-    le_target = LabelEncoder()
+    le_target = LabelEncoder() #Lbel kodiranj 0, 1, 2..
     y_train_encoded = le_target.fit_transform(y_train)
     y_test_encoded = le_target.transform(y_test)
 
@@ -76,5 +76,7 @@ def detect_outliers(train_path="data/adult_train.csv"):
     plt.title("Boxplot za age")
     plt.show()
 
+
+
 if __name__ == "__main__":
-    detect_outliers(train_path="data/adult_train.csv")
+    pass

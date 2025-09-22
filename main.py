@@ -1,7 +1,7 @@
 from data.load_data import load_adult_data
 from preprocessing.preprocess import preprocess_data
 from preprocessing.visualisation import plot_correlation_matrix
-from modeling.train_model import train_model
+from modeling.train_model import choose_and_train_model
 from evaluation.evaluate import evaluate_model
 from utils.helpers import print_separator
 
@@ -26,10 +26,10 @@ print_separator()
 print("Podaci su preprocesirani i spremni za treniranje.")
 
 # Treniranje modela i vaznost parametara
-model = train_model(X_train_enc, y_train_enc, feature_names)
+model = choose_and_train_model(X_train_enc, X_test_enc, y_train_enc, y_test_enc, model_type="RandomForest", feature_names=None)
 print("Model je treniran.")
 
 # Evaluacija
 print_separator()
-evaluate_model(model, X_test_enc, y_test_enc)
+#evaluate_model(model, X_test_enc, y_test_enc)
 print_separator()

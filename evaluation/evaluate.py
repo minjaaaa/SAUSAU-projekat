@@ -7,7 +7,7 @@ def evaluate_model(model, X_test, y_test):
     y_pred = model.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
     precision = precision_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred, average='weighted')
     cm = confusion_matrix(y_test, y_pred)
     print(f"Accuracy: {acc:.4f}")
     print(f"Precision: {precision:.4f}")
