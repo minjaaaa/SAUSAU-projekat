@@ -3,7 +3,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 import lightgbm as lgb
 import xgboost as xgb
-from sklearn.metrics import accuracy_score, f1_score, precision_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
 from utils.helpers import print_separator
 from modeling.hyperparameters import hyperParam
 
@@ -14,7 +14,7 @@ def choose_and_train_model(X_train, X_test, y_train, y_test, model_type="RandomF
     elif model_type == "KNeighbors":
         model = KNeighborsClassifier(n_neighbors=5)
     elif model_type == "LogisticRegression":
-        best_C, best_solver, best_penalty= hyperParam(X_train, y_train)
+        best_C, best_solver, best_penalty= hyperParam(X_train, y_train, model_type)
 
         model = LogisticRegression(
         C=best_C,
@@ -22,10 +22,11 @@ def choose_and_train_model(X_train, X_test, y_train, y_test, model_type="RandomF
         random_state=42,
         max_iter=1000,
         solver=best_solver
+        #class_weight='balanced'
         )
     elif model_type == "LightGBM":
         # class_weight='balanced' je ključan za neravnotežu klasa
-        model = lgb.LGBMClassifier(random_state=42, class_weight='balanced')
+        model = hyperParam(X_train, y_train, model_type)
     elif model_type == "XGBoost":
         # scale_pos_weight se koristi za neravnotežu klasa
         # Njegova vrednost je odnos broja uzoraka negativne i pozitivne klase
@@ -40,11 +41,14 @@ def choose_and_train_model(X_train, X_test, y_train, y_test, model_type="RandomF
     accuracy = accuracy_score(y_test, y_pred)
     f1 = f1_score(y_test, y_pred, average='weighted')
     prscr = precision_score(y_test, y_pred)
+    odziv = recall_score(y_test, y_pred)
     
     print(f"\n--- Rezultati za {model_type} model ---")
     print(f"Tačnost: {accuracy:.4f}")
     print(f"F1-Score: {f1:.4f}")
     print(f"Preciznost: {prscr:.4f}")
+    print(f"Odziv: {odziv:.4f}")
+    print(classification_report(y_test, y_pred))
 
     print_separator()
     print("\nModel je obučen sa najboljim parametrima!")
