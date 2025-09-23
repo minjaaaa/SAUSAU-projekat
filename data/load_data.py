@@ -29,7 +29,7 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     # Brisanje whitespace-ova
     for col in train_df.select_dtypes(include='object').columns:
         train_df[col] = train_df[col].str.strip()
-    for col in test_df.select_dtypes(include='object').columns:
+    for col in test_df.select_dtypes(include='object').columns: #ZASTO MIJIENJAS TEST SKUP?
         test_df[col] = test_df[col].str.strip()
 
     # KONVERTOVANJE SVIH NUMERICKIH KOLONA U BROJEVE PRE SPAJANJA
@@ -40,7 +40,7 @@ def load_adult_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     # Spajanje trening i test skupa za ujednačenu obradu (pre podele)
     # Ovo se radi kako bi se osiguralo da su sve operacije primenjene konzistentno na celom datasetu
     combined_df = pd.concat([train_df, test_df], ignore_index=True)
-    print(f"Tip podatka 'age' nakon transformacije: {combined_df['age'].dtype}") #OVDJE AGE POSTAJE OBJECT
+    #print(f"Tip podatka 'age' nakon transformacije: {combined_df['age'].dtype}") #OVDJE AGE POSTAJE OBJECT
 
     # Uklanjanje duplikata iz celog dataseta
     combined_df.drop_duplicates(inplace=True)
