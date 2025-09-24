@@ -35,10 +35,27 @@ def print_most_important_feature(model, feature_names):
         return
 
     importances = model.feature_importances_
-    most_important_index = np.argmax(importances)
-    most_important_name = feature_names[most_important_index]
-    most_important_value = importances[most_important_index]
+    grouped_importances = {} #recnik kategorija : vaznost
 
-    print(f"\n--- Najvažnije obeležje za model '{model.__class__.__name__}' ---")
-    print(f"Ime: {most_important_name}")
-    print(f"Vrednost: {most_important_value:.4f}")
+    for i, name in enumerate(feature_names): #ovdje je enkodovana vrednost
+        # izdvajanje originalnog naziva kategorije
+        original_col_name = name.split('_')[0]
+        
+        # ako grupa ne postoji, napravi je
+        if original_col_name not in grouped_importances:
+            grouped_importances[original_col_name] = []
+        
+        # dodajem vaznosti
+        grouped_importances[original_col_name].append((name, importances[i]))
+
+    print(f"\n--- Najvažnije obeležje po kategoriji za model '{model.__class__.__name__}' ---")
+    
+    
+    for category, features in grouped_importances.items():
+        if not features:
+            continue
+        
+        # maksimizujem po vaznosti
+        most_important = max(features, key=lambda item: item[1])
+        
+        print(f"Najvažnije iz kategorije '{category}': {most_important[0]} (Vrednost: {most_important[1]:.4f})")
