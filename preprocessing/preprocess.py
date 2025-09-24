@@ -74,7 +74,7 @@ def preprocess_data(train_path="data/adult_train.csv", test_path="data/adult_tes
         X_train[col] = imputer.fit_transform(X_train[[col]])
         X_test[col] = imputer.transform(X_test[[col]])
 
-    # 6. Obrada anomalija (outliera) u numeričkim kolonama
+    # 6. Obrada outliera u numeričkim kolonama
     # Isključujemo 'capital-gain' i 'capital-loss' zbog prirode podataka
     outlier_cols = [col for col in num_cols if col not in ['capital-gain', 'capital-loss']]
     for col in outlier_cols:
