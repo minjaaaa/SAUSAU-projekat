@@ -72,10 +72,7 @@ import numpy as np
 import pandas as pd
 
 def print_most_important_feature_per_class_logreg(model, feature_names):
-    """
-    Ispisuje najvažnije obeležje za svaku klasu na osnovu koeficijenata modela.
-
-    """
+    
     if not hasattr(model, 'coef_'):
         print("Model nema 'coef_' atribut. Ova funkcija je za Logističku regresiju.")
         return
@@ -87,7 +84,6 @@ def print_most_important_feature_per_class_logreg(model, feature_names):
         # Dobijanje koeficijenata za trenutnu klasu
         importances = coefficients[i]
 
-        # Pronađite indeks najveće apsolutne vrednosti
         most_important_index = np.argmax(np.abs(importances))
         most_important_name = feature_names[most_important_index]
         most_important_value = importances[most_important_index]
