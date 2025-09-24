@@ -10,64 +10,65 @@ COLUMN_NAMES = [
     "income"
 ]
 
-def visualise(train_path="data/adult_test.csv"):
+def visualise(train_path="data/adult_train.csv"):
     
     sns.set(style="whitegrid")
+    df = pd.read_csv(train_path, delimiter=",", encoding="utf-8")
 
-    df = pd.read_csv(train_path)
+    # Odabir numeričkih i kategoričkih kolona
+    numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
+    categorical_cols = df.select_dtypes(include='object').columns.tolist()
+
+    # Prikaz histograma za sve numeričke kolone u jednom grafikonu
+    n_numeric = len(numeric_cols)
+    if n_numeric > 0:
+        fig, axes = plt.subplots(nrows=n_numeric, ncols=1, figsize=(9, 6 * n_numeric))
+        if n_numeric == 1:
+            axes = [axes]
+        for i, col in enumerate(numeric_cols):
+            axes[i].hist(df[col], bins=20, color='skyblue', edgecolor='black')
+            axes[i].set_title(f"Distribucija: {col}")
+            axes[i].set_xlabel(col)
+            axes[i].set_ylabel("Broj")
+        plt.tight_layout()
+        plt.show()
+
+    n_categorical = len(categorical_cols)
+    if n_categorical > 0:
+        group_size = 2   # koliko kolona ide u jednom grafu
+        for start in range(0, n_categorical, group_size):
+            end = min(start + group_size, n_categorical)
+            subset = categorical_cols[start:end]
+
+            fig, axes = plt.subplots(nrows=len(subset), ncols=1, figsize=(8, 4 * len(subset)))
+            if len(subset) == 1:
+                axes = [axes]
+            for i, col in enumerate(subset):
+                sns.countplot(x=col, data=df, ax=axes[i])
+                axes[i].tick_params(axis='x', rotation=45)
+                axes[i].set_xlabel("")
+
+            plt.tight_layout()
+            plt.show()
+
+    # Preostali kod za boxplot i scatterplot...
+    if numeric_cols and categorical_cols:
+        plt.figure(figsize=(9, 6))
+        sns.boxplot(x=categorical_cols[0], y=numeric_cols[0], data=df)
+        plt.xticks(rotation=45)
+        plt.title(f"{numeric_cols[0]} po {categorical_cols[0]}")
+        plt.show()
+
+    if len(numeric_cols) >= 2:
+        plt.figure(figsize=(6, 4))
+        sns.scatterplot(x=numeric_cols[0], y=numeric_cols[1], data=df)
+        plt.title(f"{numeric_cols[0]} vs {numeric_cols[1]}")
+        plt.show()
 
     # Pregled osnovnih statistika
     print("\nStatistika dataset-a:")
     print(df.describe())
-
-    # Informacije o kolonama (tipovi, null vrednosti)
-    print("\nInfo o dataset-u:")
-    print(df.info())
-
-    # -------------------------------
-    # 3️⃣ Histogram numeričkih kolona
-    # -------------------------------
-    numeric_cols = df.select_dtypes(include='number').columns.tolist()
-
-    for col in numeric_cols:
-        plt.figure(figsize=(8,5))
-        plt.hist(df[col], bins=20, color='skyblue', edgecolor='black')
-        plt.title(f"Distribucija: {col}")
-        plt.xlabel(col)
-        plt.ylabel("Broj")
-        plt.show()
-
-    # -------------------------------
-    # Boxplot za numeričke kolone (po kategorijama)
-    # -------------------------------
-    categorical_cols = df.select_dtypes(include='object').columns.tolist()
-
-    """ # po prvoj kategorijskoj koloni
-    if numeric_cols and categorical_cols:
-        plt.figure(figsize=(9,6))
-        sns.boxplot(x=categorical_cols[0], y=numeric_cols[0], data=df)
-        plt.xticks(rotation=45)
-        plt.title(f"{numeric_cols[0]} po {categorical_cols[0]}")
-        plt.show() """
-
-    # -------------------------------
-    # 5️⃣ Countplot za kategorijske kolone
-    # -------------------------------
-    for col in categorical_cols:
-        plt.figure(figsize=(8,4))
-        sns.countplot(x=col, data=df)
-        plt.xticks(rotation=45)
-        plt.title(f"Brojnost po kategoriji: {col}")
-        plt.show()
-
-    # -------------------------------
-    # 6️⃣ Scatter plot za dve numeričke kolone
-    # -------------------------------
-    if len(numeric_cols) >= 2:
-        plt.figure(figsize=(6,4))
-        sns.scatterplot(x=numeric_cols[0], y=numeric_cols[1], data=df)
-        plt.title(f"{numeric_cols[0]} vs {numeric_cols[1]}")
-        plt.show()
+    
 
 
 def missing(df):
@@ -139,5 +140,5 @@ def plot_encoded_sex_income_relationship(X_encoded, y_encoded, all_feature_names
 
 if __name__ == "__main__":
     
-    df = pd.read_csv("data/adult_test.csv")
+    visualise(train_path="data/adult_train.csv")
     
