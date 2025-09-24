@@ -38,21 +38,6 @@ def choose_and_train_model(X_train, X_test, y_train, y_test, model_type="RandomF
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     
-    accuracy = accuracy_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred, average='weighted')
-    prscr = precision_score(y_test, y_pred)
-    odziv = recall_score(y_test, y_pred)
-    
-    print(f"\n--- Rezultati za {model_type} model ---")
-    print(f"Tačnost: {accuracy:.4f}")
-    print(f"F1-Score: {f1:.4f}")
-    print(f"Preciznost: {prscr:.4f}")
-    print(f"Odziv: {odziv:.4f}")
-    print(classification_report(y_test, y_pred))
-
-    print_separator()
-    print("\nModel je obučen sa najboljim parametrima!")
-    print_separator()
 
     # Prikaz važnosti obeležja (samo za RandomForest i LogisticRegression)
     """ if model_type == "RandomForest":
@@ -81,4 +66,34 @@ def choose_and_train_model(X_train, X_test, y_train, y_test, model_type="RandomF
         for name, importance in zip(feature_names, importances):
             print(f"  {name}: {importance:.4f}")
 
-    return model
+    return model, y_pred
+
+import numpy as np
+import pandas as pd
+
+def print_most_important_feature_per_class_logreg(model, feature_names):
+    """
+    Ispisuje najvažnije obeležje za svaku klasu na osnovu koeficijenata modela.
+
+    """
+    if not hasattr(model, 'coef_'):
+        print("Model nema 'coef_' atribut. Ova funkcija je za Logističku regresiju.")
+        return
+
+    classes = model.classes_
+    coefficients = model.coef_
+
+    for i, class_label in enumerate(classes):
+        # Dobijanje koeficijenata za trenutnu klasu
+        importances = coefficients[i]
+
+        # Pronađite indeks najveće apsolutne vrednosti
+        most_important_index = np.argmax(np.abs(importances))
+        most_important_name = feature_names[most_important_index]
+        most_important_value = importances[most_important_index]
+
+        print(f"\n--- Najvažnije obeležje za klasu '{class_label}' ---")
+        print(f"Ime: {most_important_name}")
+        print(f"Vrednost: {most_important_value:.4f}")
+
+
