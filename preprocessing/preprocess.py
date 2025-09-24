@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder, StandardScaler
 from sklearn.impute import SimpleImputer # Importujte SimpleImputer
+from preprocessing.visualisation import plot_correlation_matrix 
 
 # Vaša lista sa nazivima kolona
 COLUMN_NAMES = [
@@ -22,6 +23,9 @@ def preprocess_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     # 1. Učitavanje i početno čišćenje
     train_df = pd.read_csv(train_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
     test_df = pd.read_csv(test_path, header=None, names=COLUMN_NAMES, skipinitialspace=True)
+    
+    #Generiše i prikazuje matricu korelacije za sve numeričke kolone
+    #plot_correlation_matrix(train_df)
 
     combined_df = pd.concat([train_df, test_df], ignore_index=True)
     combined_df.drop_duplicates(inplace=True)
@@ -57,7 +61,6 @@ def preprocess_data(train_path="data/adult_train.csv", test_path="data/adult_tes
         random_state=42, 
         stratify=y
     )
-
     # 4. Odvajanje numeričkih i kategoričkih kolona
     cat_cols = X_train.select_dtypes(include='object').columns.tolist()
     num_cols = X_train.select_dtypes(include=np.number).columns.tolist()
@@ -108,3 +111,6 @@ def preprocess_data(train_path="data/adult_train.csv", test_path="data/adult_tes
     y_test_encoded = le_target.transform(y_test)
 
     return X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded, all_feature_names
+
+if __name__ == "__main__":
+    preprocess_data(train_path="data/adult_train.csv", test_path="data/adult_test.csv")
