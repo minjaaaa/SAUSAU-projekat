@@ -7,15 +7,9 @@ from scipy.stats import randint, uniform
 
 def hyperParam(X_train, y_train, model_type):
     """
-    Pronalazi optimalne hiperparametre za LogisticRegression model
+    Pronalazi optimalne hiperparametre
     koristeći RandomizedSearchCV.
 
-    Parametri:
-    X_train (np.array): Enkodirani trening skup
-    y_train (np.array): Enkodirana ciljna varijabla trening skupa.
-
-    Vraća:
-    tuple: Torka sa najboljim parametrima.
     """
     # Definišite distribucije verovatnoće za parametre
     # loguniform se koristi za C jer je to tipično u logaritamskoj skali
