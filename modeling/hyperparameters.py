@@ -11,8 +11,7 @@ def hyperParam(X_train, y_train, model_type):
     koristeći RandomizedSearchCV.
 
     """
-    # Definišite distribucije verovatnoće za parametre
-    # loguniform se koristi za C jer je to tipično u logaritamskoj skali
+    # parametri za model LogisticRegresion
     param_grid = [
         # Za 'l1' penal, koristite 'liblinear' solver
         {'penalty': ['l1'], 'solver': ['liblinear'], 'C': [0.01, 0.1, 1, 10, 100]},
@@ -20,6 +19,7 @@ def hyperParam(X_train, y_train, model_type):
         # Za 'l2' penal, možete koristiti i 'liblinear' i 'lbfgs'
         {'penalty': ['l2'], 'solver': ['liblinear', 'lbfgs'], 'C': [0.01, 0.1, 1, 10, 100]},
     ]
+    #parametri za model LightGBM
     param_distributions = {
         'n_estimators': randint(50, 300), # Broj stabala
         'learning_rate': uniform(0.01, 0.1), # Brzina učenja
@@ -27,11 +27,11 @@ def hyperParam(X_train, y_train, model_type):
         'class_weight': ['balanced', None] # Balansiranje klasa
     }
 
-    # Instancirajte LogisticRegression model
+    
     logreg = LogisticRegression(random_state=42, max_iter=1000)
     lgbm = LGBMClassifier(random_state=42)
     
-    # Inicijalizujte RandomizedSearchCV
+    
     rand_search = RandomizedSearchCV(
         estimator=lgbm,
         param_distributions=param_distributions,
@@ -43,7 +43,7 @@ def hyperParam(X_train, y_train, model_type):
         error_score='raise'
     )
 
-    # Pokrenite pretragu
+    
     rand_search.fit(X_train, y_train)
 
     print("Najbolji parametri pronađeni sa RandomizedSearchCV:")
@@ -51,7 +51,6 @@ def hyperParam(X_train, y_train, model_type):
 
 
     if model_type == "RandomForest":
-        # Vraćanje parametara pojedinačno
         best_C = rand_search.best_params_['C']
         best_solver = rand_search.best_params_['solver']
         best_penalty = rand_search.best_params_['penalty']
